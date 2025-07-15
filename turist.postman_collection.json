@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "380ed025-6a44-4963-b294-5cbfdbd44e99",
+		"name": "turist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45191841",
+		"_collection_link": "https://yomarakesha.postman.co/workspace/Yomarakesha's-Workspace~7cbcd3ef-aba9-43d3-8b19-9f2858b1782f/collection/45191841-380ed025-6a44-4963-b294-5cbfdbd44e99?action=share&source=collection_link&creator=45191841"
+	},
+	"item": [
+		{
+			"name": "goroda",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/cities",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"cities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "hotels",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/hotels",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"hotels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eskursii",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/excursions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"excursions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "attractions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/attractions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"attractions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
