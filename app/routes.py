@@ -1,8 +1,9 @@
 from flask import request, jsonify
 from app import app, db
-from app.models import City, Hotel, Excursion, Attraction, ContactRequest
+from app.models import City, Hotel, Excursion, ContactRequest
 from flask_login import login_required, current_user
 from flask import redirect, url_for, render_template
+from app.models import Attraction, Banner
 
 @app.route("/")
 def home_redirect():
@@ -107,7 +108,6 @@ def get_excursions():
         "price": e.price,
         "image": e.image
     } for e in excursions])
-
 @app.route("/api/excursions", methods=["POST"])
 @login_required
 def add_excursion():
@@ -116,7 +116,9 @@ def add_excursion():
         name=data['name'],
         description=data.get('description'),
         price=data.get('price'),
-        image=data.get('image')
+        image=data.get('image'),
+        type=data.get('type', 'city'),  # city или historical
+        city_id=data['city_id']
     )
     db.session.add(excursion)
     db.session.commit()
@@ -142,51 +144,6 @@ def delete_excursion(excursion_id):
     db.session.commit()
     return jsonify({"message": "Excursion deleted successfully"})
 
-# Attractions
-@app.route("/api/attractions", methods=["GET"])
-def get_attractions():
-    attractions = Attraction.query.all()
-    return jsonify([{
-        "id": a.id,
-        "name": a.name,
-        "price": a.price,
-        "image": a.image,
-        "city_id": a.city_id
-    } for a in attractions])
-
-@app.route("/api/attractions", methods=["POST"])
-@login_required
-def add_attraction():
-    data = request.json
-    attraction = Attraction(
-        name=data['name'],
-        price=data.get('price'),
-        image=data.get('image'),
-        city_id=data['city_id']
-    )
-    db.session.add(attraction)
-    db.session.commit()
-    return jsonify({"message": "Attraction added successfully"})
-
-@app.route("/api/attractions/<int:attraction_id>", methods=["PUT"])
-@login_required
-def update_attraction(attraction_id):
-    attraction = Attraction.query.get_or_404(attraction_id)
-    data = request.json
-    attraction.name = data['name']
-    attraction.price = data.get('price')
-    attraction.image = data.get('image')
-    attraction.city_id = data.get('city_id', attraction.city_id)
-    db.session.commit()
-    return jsonify({"message": "Attraction updated successfully"})
-
-@app.route("/api/attractions/<int:attraction_id>", methods=["DELETE"])
-@login_required
-def delete_attraction(attraction_id):
-    attraction = Attraction.query.get_or_404(attraction_id)
-    db.session.delete(attraction)
-    db.session.commit()
-    return jsonify({"message": "Attraction deleted successfully"})
 
 # Contact Requests
 @app.route("/api/contact", methods=["POST"])
@@ -200,3 +157,80 @@ def send_contact():
     db.session.add(contact)
     db.session.commit()
     return jsonify({"message": "Contact request sent successfully"})
+# Attractions
+@app.route("/api/attractions", methods=["GET"])
+def get_attractions():
+    attractions = Attraction.query.all()
+    return jsonify([
+        {
+            "id": a.id,
+            "name": a.name,
+            "description": a.description,
+            "type": a.type,
+            "image": a.image,
+            "city_id": a.city_id
+        } for a in attractions
+    ])
+
+@app.route("/api/attractions", methods=["POST"])
+@login_required
+def add_attraction():
+    data = request.json
+    attraction = Attraction(
+        name=data["name"],
+        description=data.get("description"),
+        type=data.get("type", "city"),
+        image=data.get("image"),
+        city_id=data["city_id"]
+    )
+    db.session.add(attraction)
+    db.session.commit()
+    return jsonify({"message": "Attraction added successfully"})
+
+@app.route("/api/attractions/<int:attraction_id>", methods=["PUT"])
+@login_required
+def update_attraction(attraction_id):
+    attraction = Attraction.query.get_or_404(attraction_id)
+    data = request.json
+    attraction.name = data["name"]
+    attraction.description = data.get("description")
+    attraction.type = data.get("type", attraction.type)
+    attraction.image = data.get("image", attraction.image)
+    attraction.city_id = data.get("city_id", attraction.city_id)
+    db.session.commit()
+    return jsonify({"message": "Attraction updated successfully"})
+
+@app.route("/api/attractions/<int:attraction_id>", methods=["DELETE"])
+@login_required
+def delete_attraction(attraction_id):
+    attraction = Attraction.query.get_or_404(attraction_id)
+    db.session.delete(attraction)
+    db.session.commit()
+    return jsonify({"message": "Attraction deleted successfully"})
+# Banners
+@app.route("/api/banners", methods=["GET"])
+def get_banners():
+    banners = Banner.query.all()
+    return jsonify([
+        {
+            "id": b.id,
+            "image": b.image
+        } for b in banners
+    ])
+
+@app.route("/api/banners", methods=["POST"])
+@login_required
+def add_banner():
+    data = request.json
+    banner = Banner(image=data["image"])
+    db.session.add(banner)
+    db.session.commit()
+    return jsonify({"message": "Banner added successfully"})
+
+@app.route("/api/banners/<int:banner_id>", methods=["DELETE"])
+@login_required
+def delete_banner(banner_id):
+    banner = Banner.query.get_or_404(banner_id)
+    db.session.delete(banner)
+    db.session.commit()
+    return jsonify({"message": "Banner deleted successfully"})
