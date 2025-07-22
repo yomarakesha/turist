@@ -45,6 +45,15 @@ def delete_city(city_id):
     db.session.commit()
     return jsonify({"message": "City deleted successfully"})
 
+@app.route("/api/cities/<int:city_id>", methods=["GET"])
+def get_city(city_id):
+    city = City.query.get_or_404(city_id)
+    return jsonify({
+        "id": city.id,
+        "name": city.name,
+        "image": city.image
+    })
+
 # Hotels
 @app.route("/api/hotels", methods=["GET"])
 def get_hotels():
@@ -97,6 +106,19 @@ def delete_hotel(hotel_id):
     db.session.commit()
     return jsonify({"message": "Hotel deleted successfully"})
 
+@app.route("/api/hotels/<int:hotel_id>", methods=["GET"])
+def get_hotel(hotel_id):
+    hotel = Hotel.query.get_or_404(hotel_id)
+    return jsonify({
+        "id": hotel.id,
+        "name": hotel.name,
+        "price": hotel.price,
+        "description": hotel.description,
+        "image": hotel.image,
+        "rating": hotel.rating,
+        "city_id": hotel.city_id
+    })
+
 # Excursions
 @app.route("/api/excursions", methods=["GET"])
 def get_excursions():
@@ -143,6 +165,19 @@ def delete_excursion(excursion_id):
     db.session.delete(excursion)
     db.session.commit()
     return jsonify({"message": "Excursion deleted successfully"})
+
+@app.route("/api/excursions/<int:excursion_id>", methods=["GET"])
+def get_excursion(excursion_id):
+    excursion = Excursion.query.get_or_404(excursion_id)
+    return jsonify({
+        "id": excursion.id,
+        "name": excursion.name,
+        "description": excursion.description,
+        "price": excursion.price,
+        "image": excursion.image,
+        "type": excursion.type,
+        "city_id": excursion.city_id
+    })
 
 
 # Contact Requests
@@ -234,3 +269,11 @@ def delete_banner(banner_id):
     db.session.delete(banner)
     db.session.commit()
     return jsonify({"message": "Banner deleted successfully"})
+
+@app.route("/api/banners/<int:banner_id>", methods=["GET"])
+def get_banner(banner_id):
+    banner = Banner.query.get_or_404(banner_id)
+    return jsonify({
+        "id": banner.id,
+        "image": banner.image
+    })
