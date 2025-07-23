@@ -61,11 +61,14 @@ class HotelModelView(MyModelView):
         )
     }
 
-    # Поле 'city' теперь доступно через relationship
     form_columns = ['name', 'price', 'description', 'image', 'rating', 'city', 'excursions']
+    column_list = ['name', 'price', 'rating', 'city']
+
+    column_formatters = {
+        'city': lambda v, c, m, p: m.city.name if m.city else ''
+    }
 
     def on_model_change(self, form, model, is_created):
-        # Записываем ID города из QuerySelectField
         model.city_id = form.city.data.id
 
 class ExcursionModelView(MyModelView):
