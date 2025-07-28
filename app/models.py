@@ -10,7 +10,7 @@ hotel_excursion = db.Table('hotel_excursion',
     db.Column('hotel_id', db.Integer, db.ForeignKey('hotel.id'), primary_key=True),
     db.Column('excursion_id', db.Integer, db.ForeignKey('excursion.id'), primary_key=True)
 )
-# связь экскурсии и достопримечательностей
+
 excursion_attraction = db.Table('excursion_attraction',
     db.Column('excursion_id', db.Integer, db.ForeignKey('excursion.id'), primary_key=True),
     db.Column('attraction_id', db.Integer, db.ForeignKey('attraction.id'), primary_key=True)
@@ -21,12 +21,33 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email
+        }
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200))
     excursions = db.relationship('Excursion', backref='city', lazy=True)
+    
+    def to_dict(self, include_relations=False):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'image': self.image
+        }
+        
+        if include_relations:
+            data['hotels'] = [hotel.to_dict() for hotel in self.hotels]
+            data['excursions'] = [excursion.to_dict() for excursion in self.excursions]
+            data['attractions'] = [attraction.to_dict() for attraction in self.attractions]
+            
+        return data
 
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,6 +59,26 @@ class Hotel(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
     excursions = db.relationship('Excursion', secondary=hotel_excursion, backref='hotels')
     city = db.relationship('City', backref='hotels')
+    
+    def to_dict(self, include_relations=False):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'description': self.description,
+            'image': self.image,
+            'rating': self.rating,
+            'city': {
+                'id': self.city.id,
+                'name': self.city.name,
+                'image': self.city.image
+            } if self.city else None
+        }
+        
+        if include_relations:
+            data['excursions'] = [excursion.to_dict() for excursion in self.excursions]
+            
+        return data
 
 class Excursion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,10 +86,60 @@ class Excursion(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Integer)
     image = db.Column(db.String(200))
-    type = db.Column(db.String(50), nullable=False)  # 'historical' или 'city'
+    type = db.Column(db.String(50), nullable=False)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
-    duration_hours = db.Column(db.Float)  # длительность в часах
+    duration_hours = db.Column(db.Float)
     attractions = db.relationship('Attraction', secondary=excursion_attraction, backref='excursions')
+    
+    def to_dict(self, include_relations=False):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'price': self.price,
+            'image': self.image,
+            'type': self.type,
+            'duration_hours': self.duration_hours,
+            'city': {
+                'id': self.city.id,
+                'name': self.city.name,
+                'image': self.city.image
+            } if self.city else None
+        }
+        
+        if include_relations:
+            data['attractions'] = [attraction.to_dict() for attraction in self.attractions]
+            data['hotels'] = [hotel.to_dict() for hotel in self.hotels]
+            
+        return data
+
+class Attraction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    type = db.Column(db.String(50), nullable=False)
+    image = db.Column(db.String(200))
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
+    city = db.relationship('City', backref='attractions')
+    
+    def to_dict(self, include_relations=False):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'type': self.type,
+            'image': self.image,
+            'city': {
+                'id': self.city.id,
+                'name': self.city.name,
+                'image': self.city.image
+            } if self.city else None
+        }
+        
+        if include_relations:
+            data['excursions'] = [excursion.to_dict() for excursion in self.excursions]
+            
+        return data
 
 class ContactRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,16 +147,22 @@ class ContactRequest(db.Model):
     email = db.Column(db.String(120))
     message = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-class Attraction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    type = db.Column(db.String(50), nullable=False)  # 'historical' или 'city'
-    image = db.Column(db.String(200))
-    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
-    city = db.relationship('City', backref='attractions')
-
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'message': self.message,
+            'date_created': self.date_created.isoformat() if self.date_created else None
+        }
 
 class Banner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(200), nullable=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'image': self.image
+        }
