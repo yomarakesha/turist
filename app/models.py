@@ -31,14 +31,16 @@ class User(db.Model, UserMixin):
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name_ru = db.Column(db.String(50), nullable=False)
+    name_en = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200))
     excursions = db.relationship('Excursion', backref='city', lazy=True)
     
     def to_dict(self, include_relations=False):
         data = {
             'id': self.id,
-            'name': self.name,
+            'name_ru': self.name_ru,
+            'name_en': self.name_en,
             'image': self.image
         }
         
@@ -51,9 +53,11 @@ class City(db.Model):
 
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name_ru = db.Column(db.String(100), nullable=False)
+    name_en = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.Text)
+    description_ru = db.Column(db.Text)
+    description_en = db.Column(db.Text)
     image = db.Column(db.String(200))
     rating = db.Column(db.Float)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
@@ -63,14 +67,17 @@ class Hotel(db.Model):
     def to_dict(self, include_relations=False):
         data = {
             'id': self.id,
-            'name': self.name,
+            'name_ru': self.name_ru,
+            'name_en': self.name_en,
             'price': self.price,
-            'description': self.description,
+            'description_ru': self.description_ru,
+            'description_en': self.description_en,
             'image': self.image,
             'rating': self.rating,
             'city': {
                 'id': self.city.id,
-                'name': self.city.name,
+                'name_ru': self.city.name_ru,
+                'name_en': self.city.name_en,
                 'image': self.city.image
             } if self.city else None
         }
@@ -82,8 +89,10 @@ class Hotel(db.Model):
 
 class Excursion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
+    name_ru = db.Column(db.String(100), nullable=False)
+    name_en = db.Column(db.String(100), nullable=False)
+    description_ru = db.Column(db.Text)
+    description_en = db.Column(db.Text)
     price = db.Column(db.Integer)
     image = db.Column(db.String(200))
     type = db.Column(db.String(50), nullable=False)
@@ -94,15 +103,18 @@ class Excursion(db.Model):
     def to_dict(self, include_relations=False):
         data = {
             'id': self.id,
-            'name': self.name,
-            'description': self.description,
+            'name_ru': self.name_ru,
+            'name_en': self.name_en,
+            'description_ru': self.description_ru,
+            'description_en': self.description_en,
             'price': self.price,
             'image': self.image,
             'type': self.type,
             'duration_hours': self.duration_hours,
             'city': {
                 'id': self.city.id,
-                'name': self.city.name,
+                'name_ru': self.city.name_ru,
+                'name_en': self.city.name_en,
                 'image': self.city.image
             } if self.city else None
         }
@@ -115,8 +127,10 @@ class Excursion(db.Model):
 
 class Attraction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
+    name_ru = db.Column(db.String(100), nullable=False)
+    name_en = db.Column(db.String(100), nullable=False)
+    description_ru = db.Column(db.Text)
+    description_en = db.Column(db.Text)
     type = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200))
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
@@ -125,13 +139,16 @@ class Attraction(db.Model):
     def to_dict(self, include_relations=False):
         data = {
             'id': self.id,
-            'name': self.name,
-            'description': self.description,
+            'name_ru': self.name_ru,
+            'name_en': self.name_en,
+            'description_ru': self.description_ru,
+            'description_en': self.description_en,
             'type': self.type,
             'image': self.image,
             'city': {
                 'id': self.city.id,
-                'name': self.city.name,
+                'name_ru': self.city.name_ru,
+                'name_en': self.city.name_en,
                 'image': self.city.image
             } if self.city else None
         }
@@ -141,21 +158,7 @@ class Attraction(db.Model):
             
         return data
 
-class ContactRequest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(120))
-    message = db.Column(db.Text)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'email': self.email,
-            'message': self.message,
-            'date_created': self.date_created.isoformat() if self.date_created else None
-        }
+
 
 class Banner(db.Model):
     id = db.Column(db.Integer, primary_key=True)

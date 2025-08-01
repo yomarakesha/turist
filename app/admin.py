@@ -4,7 +4,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for, request
 from app import app, db
-from app.models import City, Hotel, Excursion, ContactRequest, User, Attraction, Banner
+from app.models import City, Hotel, Excursion, User, Attraction, Banner
 from flask_admin.form import Select2Widget
 from flask_admin.form.upload import FileUploadField
 from wtforms_sqlalchemy.fields import QuerySelectField
@@ -36,7 +36,8 @@ class CityModelView(MyModelView):
             allow_overwrite=False
         )
     }
-    form_columns = ['name', 'image']
+    form_columns = ['name_ru', 'name_en', 'image']
+    column_list = ['name_ru', 'name_en', 'image']
 from flask_admin.form import FileUploadField
 from flask_admin.contrib.sqla.fields import QuerySelectField
 from wtforms.validators import DataRequired
@@ -51,7 +52,7 @@ class HotelModelView(MyModelView):
         'city': QuerySelectField(
             'Город',
             query_factory=lambda: City.query.all(),
-            get_label='name',
+            get_label='name_ru',
             allow_blank=False
         ),
         'image': FileUploadField(
@@ -61,11 +62,11 @@ class HotelModelView(MyModelView):
         )
     }
 
-    form_columns = ['name', 'price', 'description', 'image', 'rating', 'city', 'excursions']
-    column_list = ['name', 'price', 'rating', 'city']
+    form_columns = ['name_ru', 'name_en', 'price', 'description_ru', 'description_en', 'image', 'rating', 'city', 'excursions']
+    column_list = ['name_ru', 'name_en', 'price', 'rating', 'city']
 
     column_formatters = {
-        'city': lambda v, c, m, p: m.city.name if m.city else ''
+        'city': lambda v, c, m, p: m.city.name_ru if m.city else ''
     }
 
     def on_model_change(self, form, model, is_created):
@@ -83,18 +84,19 @@ class ExcursionModelView(MyModelView):
         'city': QuerySelectField(
             'Город',
             query_factory=lambda: City.query.all(),
-            get_label='name',
+            get_label='name_ru',
             allow_blank=False,
             widget=Select2Widget()
         ),
         'attractions': QuerySelectMultipleField(
             'Достопримечательности',
             query_factory=lambda: Attraction.query.all(),
-            get_label='name',
+            get_label='name_ru',
             widget=Select2Widget()
         )
     }
-    form_columns = ['name', 'description', 'price', 'image', 'type', 'duration_hours', 'city', 'attractions']
+    form_columns = ['name_ru', 'name_en', 'description_ru', 'description_en', 'price', 'image', 'type', 'duration_hours', 'city', 'attractions']
+    column_list = ['name_ru', 'name_en', 'type', 'price', 'city']
 
     def on_model_change(self, form, model, is_created):
         model.city_id = form.city.data.id
@@ -112,12 +114,13 @@ class AttractionModelView(MyModelView):
         'city': QuerySelectField(
             'Город',
             query_factory=lambda: City.query.all(),
-            get_label='name',
+            get_label='name_ru',
             allow_blank=False,
             widget=Select2Widget()
         )
     }
-    form_columns = ['name', 'description', 'type', 'image', 'city']
+    form_columns = ['name_ru', 'name_en', 'description_ru', 'description_en', 'type', 'image', 'city']
+    column_list = ['name_ru', 'name_en', 'type', 'city']
 
     def on_model_change(self, form, model, is_created):
         model.city_id = form.city.data.id
@@ -137,5 +140,5 @@ admin.add_view(ExcursionModelView(Excursion, db.session))
 # admin.add_view(AttractionModelView(Attraction, db.session))
 admin.add_view(AttractionModelView(Attraction, db.session))
 admin.add_view(BannerModelView(Banner, db.session))
-admin.add_view(MyModelView(ContactRequest, db.session))
+
 admin.add_view(MyModelView(User, db.session))

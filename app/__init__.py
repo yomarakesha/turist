@@ -3,13 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_admin import Admin
-from flask_babel import Babel  # Добавляем
+from flask_babel import Babel
 from flask_cors import CORS
 app = Flask(__name__)
 app.config.from_object('config.Config')
-CORS(app) 
-# Настройка языка по умолчанию
-app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+app.config['BABEL_DEFAULT_LOCALE'] = 'ru'
+app.config['BABEL_SUPPORTED_LOCALES'] = ['ru', 'en']
+CORS(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
