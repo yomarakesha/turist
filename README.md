@@ -49,3 +49,33 @@ python run.py
 - URL: `http://localhost:5000/admin`
 - Логин: `admin`
 - Пароль: `admin` 
+
+## Поиск по названиям (search)
+
+Теперь для следующих эндпоинтов можно использовать параметр `search` для поиска по name_ru и name_en (регистр не важен):
+
+- `/api/cities?search=Москва`
+- `/api/hotels?search=Hilton`
+- `/api/excursions?search=Обзорная`
+- `/api/attractions?search=музей`
+
+Можно комбинировать с другими параметрами:
+- `/api/hotels?city_id=1&search=Hilton`
+- `/api/excursions?city_id=2&type=bus&search=Обзорная`
+
+**Пример запроса для Postman:**
+```
+GET http://localhost:5000/api/hotels?search=Hilton
+```
+
+**Результат:**
+```json
+[
+  {
+    "id": 1,
+    "name_ru": "Хилтон Москва",
+    "name_en": "Hilton Moscow",
+    ...
+  }
+]
+``` 

@@ -12,7 +12,12 @@ def home_redirect():
 # Cities
 @app.route("/api/cities", methods=["GET"])
 def get_cities():
-    cities = City.query.all()
+    search = request.args.get('search')
+    query = City.query
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter((City.name_ru.ilike(search_pattern)) | (City.name_en.ilike(search_pattern)))
+    cities = query.all()
     include_relations = request.args.get('include_relations', 'false').lower() == 'true'
     return jsonify([c.to_dict(include_relations=include_relations) for c in cities])
 
@@ -30,12 +35,14 @@ def get_city(city_id):
 @app.route("/api/hotels", methods=["GET"])
 def get_hotels():
     city_id = request.args.get('city_id')
-    
+    search = request.args.get('search')
+    query = Hotel.query
     if city_id:
-        hotels = Hotel.query.filter_by(city_id=city_id).all()
-    else:
-        hotels = Hotel.query.all()
-    
+        query = query.filter_by(city_id=city_id)
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter((Hotel.name_ru.ilike(search_pattern)) | (Hotel.name_en.ilike(search_pattern)))
+    hotels = query.all()
     include_relations = request.args.get('include_relations', 'false').lower() == 'true'
     return jsonify([h.to_dict(include_relations=include_relations) for h in hotels])
 
@@ -54,14 +61,15 @@ def get_hotel(hotel_id):
 def get_excursions():
     city_id = request.args.get('city_id')
     excursion_type = request.args.get('type')
-    
+    search = request.args.get('search')
     query = Excursion.query
-    
     if city_id:
         query = query.filter_by(city_id=city_id)
     if excursion_type:
         query = query.filter_by(type=excursion_type)
-    
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter((Excursion.name_ru.ilike(search_pattern)) | (Excursion.name_en.ilike(search_pattern)))
     excursions = query.all()
     include_relations = request.args.get('include_relations', 'false').lower() == 'true'
     return jsonify([e.to_dict(include_relations=include_relations) for e in excursions])
@@ -81,14 +89,15 @@ def get_excursion(excursion_id):
 def get_attractions():
     city_id = request.args.get('city_id')
     attraction_type = request.args.get('type')
-    
+    search = request.args.get('search')
     query = Attraction.query
-    
     if city_id:
         query = query.filter_by(city_id=city_id)
     if attraction_type:
         query = query.filter_by(type=attraction_type)
-    
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter((Attraction.name_ru.ilike(search_pattern)) | (Attraction.name_en.ilike(search_pattern)))
     attractions = query.all()
     include_relations = request.args.get('include_relations', 'false').lower() == 'true'
     return jsonify([a.to_dict(include_relations=include_relations) for a in attractions])

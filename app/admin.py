@@ -10,7 +10,8 @@ from flask_admin.form.upload import FileUploadField
 from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms import SelectField 
 from wtforms_sqlalchemy.fields import QuerySelectMultipleField  # добавь наверху
-
+from wtforms import PasswordField
+from flask_admin.menu import MenuLink
 file_path = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 
 class MyModelView(ModelView):
@@ -132,6 +133,11 @@ class BannerModelView(MyModelView):
     }
     form_columns = ['image']
 
+class UserModelView(MyModelView):
+    form_columns = ['username', 'email', 'password']
+    form_overrides = dict(password=PasswordField)
+    # Не хэшируем пароль, сохраняем как есть
+
 admin = Admin(app, name='Админ-панель', template_mode='bootstrap4', index_view=MyAdminIndexView())
 
 admin.add_view(CityModelView(City, db.session))
@@ -141,4 +147,5 @@ admin.add_view(ExcursionModelView(Excursion, db.session))
 admin.add_view(AttractionModelView(Attraction, db.session))
 admin.add_view(BannerModelView(Banner, db.session))
 
-admin.add_view(MyModelView(User, db.session))
+admin.add_view(UserModelView(User, db.session))
+admin.add_link(MenuLink(name='Выйти', url='/logout'))

@@ -11,7 +11,7 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
 
-        if user and check_password_hash(user.password, password):
+        if user and user.password == password:
             login_user(user)
             return redirect(url_for('admin.index'))
         else:
