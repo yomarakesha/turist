@@ -9,7 +9,9 @@ app = Flask(__name__)
 app.config.from_object('config.Config')
 app.config['BABEL_DEFAULT_LOCALE'] = 'ru'
 app.config['BABEL_SUPPORTED_LOCALES'] = ['ru', 'en']
-CORS(app)
+CORS(app,origins=["https://turist-front.vercel.app", "http://localhost:3000"],
+     supports_credentials=True,
+     resources={r"/api/*": {"origins": ["https://turist-front.vercel.app"]}})
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
