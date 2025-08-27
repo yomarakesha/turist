@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+
+# --- Environments ---
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# --- IDE / Editors ---
+.vscode/
+.idea/
+
+# --- Databases / Logs ---
+*.db
+*.sqlite3
+*.log
+
+# --- Flask app data ---
+# ignore instance entirely (contains runtime DB, secrets, etc.)
+instance/
+
+# Uploads/static generated files
+app/static/uploads/
+app/static/uploads/**
+
+# OS files
+.DS_Store
+Thumbs.db
+
