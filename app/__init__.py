@@ -5,6 +5,8 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
 from flask_cors import CORS
+from flask_mail import Mail
+
 app = Flask(__name__)
 app.config.from_object('config.Config')
 app.config['BABEL_DEFAULT_LOCALE'] = 'ru'
@@ -20,5 +22,8 @@ login_manager.login_view = 'login'
 
 # Инициализация Babel
 babel = Babel(app)
+
+# Инициализация Flask-Mail
+mail = Mail(app)
 
 from app import routes, models, auth, admin
